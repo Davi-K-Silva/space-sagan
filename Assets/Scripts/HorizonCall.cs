@@ -94,8 +94,8 @@ public class SolarSystemUpdater : MonoBehaviour
                     float y = float.Parse(parts[3]);
                     float z = float.Parse(parts[5]);
                     Debug.Log($"X: {x} Y: {y} Z:{z}");
-                    Debug.Log($"[X: {x*scaleSpace} Y: {y*scaleSpace} Z:{z*scaleSpace}]");
-                    return new Vector3(x*scaleSpace, y*scaleSpace, z*scaleSpace);  // Return the first position found
+                    Debug.Log($"[X: {x/scaleSpace} Y: {y/scaleSpace} Z:{z/scaleSpace}]");
+                    return new Vector3(x/scaleSpace, y/scaleSpace, z/scaleSpace);  // Return the first position found
                 }
             }
         }
@@ -110,7 +110,9 @@ public class SolarSystemUpdater : MonoBehaviour
         if (objectMapping.TryGetValue(objId, out int index) && index < planets.Length)
         {
             planets[index].transform.position = position;
-            //planets[index].transform.localScale = new Vector3(0.25, 0.25, 0.25);
+            // planets[index].transform.localScale = new Vector3(planets[index].transform.localScale.x/1000000,
+            //                                                   planets[index].transform.localScale.y/1000000,
+            //                                                   planets[index].transform.localScale.z/1000000);
         }
         else
         {
