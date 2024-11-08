@@ -7,9 +7,7 @@ using System.IO;
 
 public class SolarSystemUpdater : MonoBehaviour
 {
-
     private static readonly Quaternion tiltRotation = Quaternion.Euler(0, 0, 0);
-
     [SerializeField]
     private GameObject[] planets;  // Assign planet GameObjects in the Inspector
 
@@ -18,7 +16,6 @@ public class SolarSystemUpdater : MonoBehaviour
 
     private string horizonsUrl = "https://ssd.jpl.nasa.gov/horizons_batch.cgi";
 
-    // Object ID to GameObject mapping (ID to index)
     private Dictionary<string, int> objectMapping = new Dictionary<string, int>
     {
         { "10", 0 },  // Sun
@@ -32,13 +29,11 @@ public class SolarSystemUpdater : MonoBehaviour
         { "899", 8 }  // Neptune
     };
 
-    // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(FetchDataForAllObjects());
     }
 
-    // Fetch data for all objects in the mapping
     IEnumerator FetchDataForAllObjects()
     {
         foreach (var obj in objectMapping)
@@ -48,12 +43,12 @@ public class SolarSystemUpdater : MonoBehaviour
         }
     }
 
-   IEnumerator FetchHorizonsData(string objId, string startDate, string endDate)
+    IEnumerator FetchHorizonsData(string objId, string startDate, string endDate)
     {
         string queryParams =
             $"?batch=1&MAKE_EPHEM=YES&COMMAND='{objId}'&EPHEM_TYPE='VECTORS'" +
             $"&CENTER='500@0'&START_TIME='{startDate}'&STOP_TIME='{endDate}'" +
-            "&STEP_SIZE='1 DAYS'&VEC_TABLE='3'&REF_SYSTEM='ICRF'&REF_PLANE='ECLIPTIC'" +
+            "&STEP_SIZE='1 DAYS'&VEC_TABLE='3'&REF_SYSTEM='ICRF'&REF_PLANE='F'" +
             "&VEC_CORR='NONE'&CAL_TYPE='M'&OUT_UNITS='KM-S'&VEC_LABELS='YES'" +
             "&VEC_DELTA_T='NO'&CSV_FORMAT='NO'&OBJ_DATA='YES'";
 
@@ -78,109 +73,60 @@ public class SolarSystemUpdater : MonoBehaviour
         }
     }
 
-
-// Parse the Horizons data to extract all dates and X, Y, Z positions
-void ParseEphemerisData(string data, out List<string> dates, out List<Vector3> positions)
-{
-    dates = new List<string>();
-    positions = new List<Vector3>();
-
-    string startMarker = "$$SOE";
-    string endMarker = "$$EOE";
-    int startIndex = data.IndexOf(startMarker) + startMarker.Length;
-    int endIndex = data.IndexOf(endMarker);
-
-    if (startIndex < endIndex)
+    void ParseEphemerisData(string data, out List<string> dates, out List<Vector3> positions)
     {
-        string ephemerisData = data.Substring(startIndex, endIndex - startIndex).Trim();
-        string[] lines = ephemerisData.Split('\n');
+        dates = new List<string>();
+        positions = new List<Vector3>();
 
-        foreach (string line in lines)
+        string startMarker = "$$SOE";
+        string endMarker = "$$EOE";
+        int startIndex = data.IndexOf(startMarker) + startMarker.Length;
+        int endIndex = data.IndexOf(endMarker);
+
+        if (startIndex < endIndex)
         {
-            // Detect date lines
-            if (line.Contains(" = A.D."))
+            string ephemerisData = data.Substring(startIndex, endIndex - startIndex).Trim();
+            string[] lines = ephemerisData.Split('\n');
+
+            foreach (string line in lines)
             {
-                string datePart = line.Split('=')[1].Trim();
-                dates.Add(datePart);
+                // Detect date lines
+                if (line.Contains(" = A.D."))
+                {
+                    string datePart = line.Split('=')[1].Trim();
+                    dates.Add(datePart);
+                }
+                else if (line.Trim().StartsWith("X"))
+                {
+                    // Adjust line if necessary, as in Python script
+                    string adjustedLine = line.Replace("=-", "= -");
+                    string[] parts = adjustedLine.Split(new[] { ' ', '=' }, StringSplitOptions.RemoveEmptyEntries);
+                    Debug.Log(parts[0]);
+                    Debug.Log(parts[1]);
+                    Debug.Log(parts[2]);
+                    Debug.Log(parts[3]);
+                    Debug.Log(parts[4]);
+                    Debug.Log(parts[5]);
+                    float x = float.Parse(parts[1]);
+                    float y = float.Parse(parts[3]);
+                    float z = float.Parse(parts[5]);
+
+                    Vector3 position = new Vector3(x / scaleSpace, y / scaleSpace, z / scaleSpace);
+                    positions.Add(position);
+                }
             }
-            else if (line.Contains("X ="))
-            {
-                // Parse position line
-                string[] parts = line.Split(new[] { ' ', '=' }, System.StringSplitOptions.RemoveEmptyEntries);
-                float x = float.Parse(parts[1]);
-                float y = float.Parse(parts[3]);
-                float z = float.Parse(parts[5]);
-
-                // Scale down and apply tilt rotation
-                Vector3 position = new Vector3(x / scaleSpace, y / scaleSpace, z / scaleSpace);
-                Vector3 rotatedPosition = position;
-
-                positions.Add(rotatedPosition);
-            }
-        }
-    }
-    else
-    {
-        Debug.LogError("Invalid data format.");
-    }
-}
-
-// dates = new List<string>();
-//     positions = new List<Vector3>();
-
-//     string startMarker = "$$SOE";
-//     string endMarker = "$$EOE";
-//     int startIndex = data.IndexOf(startMarker) + startMarker.Length;
-//     int endIndex = data.IndexOf(endMarker);
-
-//     if (startIndex < endIndex)
-//     {
-//         string ephemerisData = data.Substring(startIndex, endIndex - startIndex).Trim();
-//         string[] lines = ephemerisData.Split('\n');
-
-//         foreach (string line in lines)
-//         {
-//             // Look for lines with dates and position data
-//             if (line.Contains(" = A.D."))  // Detect the date line
-//             {
-//                 // Parse the date from the line
-//                 string datePart = line.Split('=')[1].Trim();
-//                 dates.Add(datePart);  // Add parsed date to list
-//             }
-//             else if (line.Contains("X ="))  // Detect the position line
-//             {
-//                 string[] parts = line.Split(new[] { ' ', '=' }, StringSplitOptions.RemoveEmptyEntries);
-//                 float x = float.Parse(parts[1]);
-//                 float y = float.Parse(parts[3]);
-//                 float z = float.Parse(parts[5]);
-//                 positions.Add(new Vector3(x / scaleSpace, y / scaleSpace, z / scaleSpace));
-//             }
-//         }
-//     }
-//     else
-//     {
-//         Debug.LogError("Invalid data format.");
-//     }
-
-    // Update the position of the corresponding planet GameObject
-    void UpdatePlanetPosition(string objId, Vector3 position)
-    {
-        if (objectMapping.TryGetValue(objId, out int index) && index < planets.Length)
-        {
-            planets[index].transform.position = position;
         }
         else
         {
-            Debug.LogError($"No GameObject assigned for object ID {objId}");
+            Debug.LogError("Invalid data format.");
         }
     }
 
-   void SavePositionsToFile(string objId, List<string> dates, List<Vector3> positions)
+    void SavePositionsToFile(string objId, List<string> dates, List<Vector3> positions)
     {
-        // Generate a unique file path for each planet based on the object ID
         string filePath = Path.Combine(Application.persistentDataPath, $"planet_{objId}_positions.txt");
 
-        using (StreamWriter writer = new StreamWriter(filePath, false)) // Overwrite mode
+        using (StreamWriter writer = new StreamWriter(filePath, false))
         {
             writer.WriteLine("Date, X, Y, Z");
 
@@ -194,8 +140,4 @@ void ParseEphemerisData(string data, out List<string> dates, out List<Vector3> p
 
         Debug.Log($"Data for object {objId} saved to {filePath}");
     }
-
-
-
-
 }

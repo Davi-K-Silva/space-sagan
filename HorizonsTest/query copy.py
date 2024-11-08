@@ -10,7 +10,9 @@ def fetch_horizons_data(obj_id, start_date, end_date):
         'MAKE_EPHEM': 'YES',
         'COMMAND': f"'{obj_id}'",
         'EPHEM_TYPE': "'VECTORS'",
-        'CENTER': "'500@0'",
+        'CENTER': "'coord@10'",
+        'COORD_TYPE': "'GEODETIC'",
+        'SITE_COORD': "'0,0,0'",
         'START_TIME': f"'{start_date}'",
         'STOP_TIME': f"'{end_date}'",
         'STEP_SIZE': "'1 DAYS'",
@@ -103,11 +105,9 @@ for obj_id, (start_date, end_date) in objects.items():
                 count+=1
                 parts = line.split()
                 print(parts)
-                print(obj_id)
-                print(str(float(parts[2])/10000) + " | "+ str(float(parts[5])/10000) + " | " + str(float(parts[8])/10000))
-                x_coords.append(float(parts[2])/10000)
-                y_coords.append(float(parts[5])/10000)
-                z_coords.append(float(parts[8])/10000)
+                x_coords.append(float(parts[2]))
+                y_coords.append(float(parts[5]))
+                z_coords.append(float(parts[8]))
 
         # Plotting orbits
         ax.scatter(x_coords, y_coords, z_coords, marker='o', label=realname(obj_id))
