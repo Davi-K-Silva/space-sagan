@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.IO;
 
 public class SolarSystemUpdater : MonoBehaviour
 {
@@ -44,8 +45,7 @@ public class SolarSystemUpdater : MonoBehaviour
         }
     }
 
-    // Coroutine to fetch ephemeris data for a specific object
-    IEnumerator FetchHorizonsData(string objId, string startDate, string endDate)
+   IEnumerator FetchHorizonsData(string objId, string startDate, string endDate)
     {
         string queryParams =
             $"?batch=1&MAKE_EPHEM=YES&COMMAND='{objId}'&EPHEM_TYPE='VECTORS'" +
@@ -61,8 +61,12 @@ public class SolarSystemUpdater : MonoBehaviour
             if (request.result == UnityWebRequest.Result.Success)
             {
                 string data = request.downloadHandler.text;
-                Vector3 position = ParseEphemerisData(data);
-                UpdatePlanetPosition(objId, position);
+
+                // Parse dates and positions from the response data
+                ParseEphemerisData(data, out List<string> dates, out List<Vector3> positions);
+
+                // Save to a separate file for each planet
+                SavePositionsToFile(objId, dates, positions);
             }
             else
             {
@@ -71,38 +75,47 @@ public class SolarSystemUpdater : MonoBehaviour
         }
     }
 
-    // Parse the Horizons data to extract the first X, Y, Z position
-    Vector3 ParseEphemerisData(string data)
+
+// Parse the Horizons data to extract all dates and X, Y, Z positions
+void ParseEphemerisData(string data, out List<string> dates, out List<Vector3> positions)
+{
+    dates = new List<string>();
+    positions = new List<Vector3>();
+
+    string startMarker = "$$SOE";
+    string endMarker = "$$EOE";
+    int startIndex = data.IndexOf(startMarker) + startMarker.Length;
+    int endIndex = data.IndexOf(endMarker);
+
+    if (startIndex < endIndex)
     {
-        string startMarker = "$$SOE";
-        string endMarker = "$$EOE";
-        int startIndex = data.IndexOf(startMarker) + startMarker.Length;
-        int endIndex = data.IndexOf(endMarker);
+        string ephemerisData = data.Substring(startIndex, endIndex - startIndex).Trim();
+        string[] lines = ephemerisData.Split('\n');
 
-        if (startIndex < endIndex)
+        foreach (string line in lines)
         {
-            string ephemerisData = data.Substring(startIndex, endIndex - startIndex).Trim();
-            string[] lines = ephemerisData.Split('\n');
-
-            foreach (string line in lines)
+            // Look for lines with dates and position data
+            if (line.Contains(" = A.D."))  // Detect the date line
             {
-                if (line.Contains("X ="))
-                {
-                    string[] parts = line.Split(new[] { ' ', '=' }, StringSplitOptions.RemoveEmptyEntries);
-                     Debug.Log($"{parts[0]} <> {parts[1]} <> {parts[3]} <> {parts}");
-                    float x = float.Parse(parts[1]);
-                    float y = float.Parse(parts[3]);
-                    float z = float.Parse(parts[5]);
-                    Debug.Log($"X: {x} Y: {y} Z:{z}");
-                    Debug.Log($"[X: {x/scaleSpace} Y: {y/scaleSpace} Z:{z/scaleSpace}]");
-                    return new Vector3(x/scaleSpace, y/scaleSpace, z/scaleSpace);  // Return the first position found
-                }
+                // Parse the date from the line
+                string datePart = line.Split('=')[1].Trim();
+                dates.Add(datePart);  // Add parsed date to list
+            }
+            else if (line.Contains("X ="))  // Detect the position line
+            {
+                string[] parts = line.Split(new[] { ' ', '=' }, StringSplitOptions.RemoveEmptyEntries);
+                float x = float.Parse(parts[1]);
+                float y = float.Parse(parts[3]);
+                float z = float.Parse(parts[5]);
+                positions.Add(new Vector3(x / scaleSpace, y / scaleSpace, z / scaleSpace));
             }
         }
-
-        Debug.LogError("Invalid data format.");
-        return Vector3.zero;  // Default if parsing fails
     }
+    else
+    {
+        Debug.LogError("Invalid data format.");
+    }
+}
 
     // Update the position of the corresponding planet GameObject
     void UpdatePlanetPosition(string objId, Vector3 position)
@@ -110,13 +123,34 @@ public class SolarSystemUpdater : MonoBehaviour
         if (objectMapping.TryGetValue(objId, out int index) && index < planets.Length)
         {
             planets[index].transform.position = position;
-            // planets[index].transform.localScale = new Vector3(planets[index].transform.localScale.x/1000000,
-            //                                                   planets[index].transform.localScale.y/1000000,
-            //                                                   planets[index].transform.localScale.z/1000000);
         }
         else
         {
             Debug.LogError($"No GameObject assigned for object ID {objId}");
         }
     }
+
+   void SavePositionsToFile(string objId, List<string> dates, List<Vector3> positions)
+    {
+        // Generate a unique file path for each planet based on the object ID
+        string filePath = Path.Combine(Application.persistentDataPath, $"planet_{objId}_positions.txt");
+
+        using (StreamWriter writer = new StreamWriter(filePath, false)) // Overwrite mode
+        {
+            writer.WriteLine("Date, X, Y, Z");
+
+            for (int i = 0; i < positions.Count; i++)
+            {
+                string date = dates[i];
+                Vector3 pos = positions[i];
+                writer.WriteLine($"{date}, {pos.x}, {pos.y}, {pos.z}");
+            }
+        }
+
+        Debug.Log($"Data for object {objId} saved to {filePath}");
+    }
+
+
+
+
 }
