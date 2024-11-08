@@ -7,6 +7,9 @@ using System.IO;
 
 public class SolarSystemUpdater : MonoBehaviour
 {
+
+    private static readonly Quaternion tiltRotation = Quaternion.Euler(0, 0, 0);
+
     [SerializeField]
     private GameObject[] planets;  // Assign planet GameObjects in the Inspector
 
@@ -94,20 +97,25 @@ void ParseEphemerisData(string data, out List<string> dates, out List<Vector3> p
 
         foreach (string line in lines)
         {
-            // Look for lines with dates and position data
-            if (line.Contains(" = A.D."))  // Detect the date line
+            // Detect date lines
+            if (line.Contains(" = A.D."))
             {
-                // Parse the date from the line
                 string datePart = line.Split('=')[1].Trim();
-                dates.Add(datePart);  // Add parsed date to list
+                dates.Add(datePart);
             }
-            else if (line.Contains("X ="))  // Detect the position line
+            else if (line.Contains("X ="))
             {
-                string[] parts = line.Split(new[] { ' ', '=' }, StringSplitOptions.RemoveEmptyEntries);
+                // Parse position line
+                string[] parts = line.Split(new[] { ' ', '=' }, System.StringSplitOptions.RemoveEmptyEntries);
                 float x = float.Parse(parts[1]);
                 float y = float.Parse(parts[3]);
                 float z = float.Parse(parts[5]);
-                positions.Add(new Vector3(x / scaleSpace, y / scaleSpace, z / scaleSpace));
+
+                // Scale down and apply tilt rotation
+                Vector3 position = new Vector3(x / scaleSpace, y / scaleSpace, z / scaleSpace);
+                Vector3 rotatedPosition = position;
+
+                positions.Add(rotatedPosition);
             }
         }
     }
@@ -116,6 +124,43 @@ void ParseEphemerisData(string data, out List<string> dates, out List<Vector3> p
         Debug.LogError("Invalid data format.");
     }
 }
+
+// dates = new List<string>();
+//     positions = new List<Vector3>();
+
+//     string startMarker = "$$SOE";
+//     string endMarker = "$$EOE";
+//     int startIndex = data.IndexOf(startMarker) + startMarker.Length;
+//     int endIndex = data.IndexOf(endMarker);
+
+//     if (startIndex < endIndex)
+//     {
+//         string ephemerisData = data.Substring(startIndex, endIndex - startIndex).Trim();
+//         string[] lines = ephemerisData.Split('\n');
+
+//         foreach (string line in lines)
+//         {
+//             // Look for lines with dates and position data
+//             if (line.Contains(" = A.D."))  // Detect the date line
+//             {
+//                 // Parse the date from the line
+//                 string datePart = line.Split('=')[1].Trim();
+//                 dates.Add(datePart);  // Add parsed date to list
+//             }
+//             else if (line.Contains("X ="))  // Detect the position line
+//             {
+//                 string[] parts = line.Split(new[] { ' ', '=' }, StringSplitOptions.RemoveEmptyEntries);
+//                 float x = float.Parse(parts[1]);
+//                 float y = float.Parse(parts[3]);
+//                 float z = float.Parse(parts[5]);
+//                 positions.Add(new Vector3(x / scaleSpace, y / scaleSpace, z / scaleSpace));
+//             }
+//         }
+//     }
+//     else
+//     {
+//         Debug.LogError("Invalid data format.");
+//     }
 
     // Update the position of the corresponding planet GameObject
     void UpdatePlanetPosition(string objId, Vector3 position)
