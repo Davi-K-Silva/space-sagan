@@ -69,8 +69,8 @@ public class SolarSystemLoader : MonoBehaviour
 
             string date = parts[0].Trim();
             float x = float.Parse(parts[1].Trim(), CultureInfo.InvariantCulture);
-            float y = float.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
-            float z = float.Parse(parts[3].Trim(), CultureInfo.InvariantCulture);
+            float y = float.Parse(parts[3].Trim(), CultureInfo.InvariantCulture);
+            float z = float.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
 
             planetPositions[date] = new Vector3(x, y, z);
         }
