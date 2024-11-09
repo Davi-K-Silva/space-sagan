@@ -131,6 +131,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 67468925}
+  - component: {fileID: 67468926}
   m_Layer: 0
   m_Name: Mars
   m_TagString: Untagged
@@ -155,6 +156,20 @@ Transform:
   - {fileID: 1401468665}
   m_Father: {fileID: 3906071635816706399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &67468926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 67468924}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f6910f5ab2f753fe83efc02ab15fe8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  planetID: 499
+  positions: []
 --- !u!1 &75270491
 GameObject:
   m_ObjectHideFlags: 0
@@ -1527,6 +1542,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 672667785}
+  - component: {fileID: 672667786}
   m_Layer: 0
   m_Name: Neptune
   m_TagString: Untagged
@@ -1551,6 +1567,20 @@ Transform:
   - {fileID: 1027588488}
   m_Father: {fileID: 3906071635816706399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &672667786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 672667784}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f6910f5ab2f753fe83efc02ab15fe8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  planetID: 899
+  positions: []
 --- !u!1 &679111032
 GameObject:
   m_ObjectHideFlags: 0
@@ -2755,6 +2785,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1138270511}
+  - component: {fileID: 1138270512}
   m_Layer: 0
   m_Name: Saturn
   m_TagString: Untagged
@@ -2779,6 +2810,20 @@ Transform:
   - {fileID: 75270492}
   m_Father: {fileID: 3906071635816706399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1138270512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1138270510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f6910f5ab2f753fe83efc02ab15fe8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  planetID: 699
+  positions: []
 --- !u!1 &1199405798
 GameObject:
   m_ObjectHideFlags: 0
@@ -3691,6 +3736,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1823602491}
+  - component: {fileID: 1823602492}
   m_Layer: 0
   m_Name: Jupiter
   m_TagString: Untagged
@@ -3715,6 +3761,20 @@ Transform:
   - {fileID: 158984579}
   m_Father: {fileID: 3906071635816706399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1823602492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1823602490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f6910f5ab2f753fe83efc02ab15fe8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  planetID: 599
+  positions: []
 --- !u!1 &1848765755
 GameObject:
   m_ObjectHideFlags: 0
@@ -3772,7 +3832,7 @@ MonoBehaviour:
   labelScaleFactor: 0.1
   positionOffset: 0.3
   minScale: 0.5
-  maxScale: 10
+  maxScale: 500
 --- !u!114 &1848765758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4048,6 +4108,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2102573900}
+  - component: {fileID: 2102573901}
   m_Layer: 0
   m_Name: Uranus
   m_TagString: Untagged
@@ -4072,6 +4133,20 @@ Transform:
   - {fileID: 1083975619}
   m_Father: {fileID: 3906071635816706399}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2102573901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2102573899}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f6910f5ab2f753fe83efc02ab15fe8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  planetID: 799
+  positions: []
 --- !u!114 &2111442807
 MonoBehaviour:
   m_ObjectHideFlags: 0
