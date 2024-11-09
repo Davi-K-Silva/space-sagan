@@ -5,7 +5,7 @@ public class DistanceBasedScaler : MonoBehaviour
     public Transform planet;             // Reference to the planet's transform
     public float labelScaleFactor = 0.1f; // Controls the label's base scale
     public float positionOffset = 0.5f;   // Controls label distance from the planet
-    public float minScale = 0.5f;         // Minimum label scale
+    public float minScale = 0.1f;         // Minimum label scale
     public float maxScale = 5f;           // Maximum label scale
 
     private Transform mainCamera;
