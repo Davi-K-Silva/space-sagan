@@ -35,8 +35,8 @@ public class OrbitDataLoader : MonoBehaviour
             if (parts.Length < 4) continue;
 
             float x = float.Parse(parts[1].Trim(), CultureInfo.InvariantCulture);
-            float y = float.Parse(parts[3].Trim(), CultureInfo.InvariantCulture);
-            float z = float.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+            float y = float.Parse(parts[2].Trim(), CultureInfo.InvariantCulture);
+            float z = float.Parse(parts[3].Trim(), CultureInfo.InvariantCulture);
 
             // Add each position to the list
             positions.Add(new Vector3(x, y, z));

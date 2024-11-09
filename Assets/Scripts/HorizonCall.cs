@@ -101,15 +101,15 @@ public class SolarSystemUpdater : MonoBehaviour
                     // Adjust line if necessary, as in Python script
                     string adjustedLine = line.Replace("=-", "= -");
                     string[] parts = adjustedLine.Split(new[] { ' ', '=' }, StringSplitOptions.RemoveEmptyEntries);
-                    Debug.Log(parts[0]);
-                    Debug.Log(parts[1]);
-                    Debug.Log(parts[2]);
-                    Debug.Log(parts[3]);
-                    Debug.Log(parts[4]);
-                    Debug.Log(parts[5]);
+                    // Debug.Log(parts[0]);
+                    // Debug.Log(parts[1]);
+                    // Debug.Log(parts[2]);
+                    // Debug.Log(parts[3]);
+                    // Debug.Log(parts[4]);
+                    // Debug.Log(parts[5]);
                     float x = float.Parse(parts[1]);
-                    float y = float.Parse(parts[3]);
-                    float z = float.Parse(parts[5]);
+                    float y = float.Parse(parts[5]); //   \/    Changed  Y with Z  (Hotizon API Z  axis goes "UP" , so to match it with unity, it was changed to Y  )
+                     float z = float.Parse(parts[3]); //  /\   Changed Z with Y
 
                     Vector3 position = new Vector3(x / scaleSpace, y / scaleSpace, z / scaleSpace);
                     positions.Add(position);
