@@ -28,9 +28,10 @@ public class SolarSystemLoader : MonoBehaviour
 
     private Dictionary<string, Dictionary<string, Vector3>> positionData = new Dictionary<string, Dictionary<string, Vector3>>();
     private Dictionary<int, List<Vector3>> animationPaths = new Dictionary<int, List<Vector3>>();
-    private Dictionary<int, int> planetFrames = new Dictionary<int, int>();
     private Dictionary<int, bool> planetAnimating = new Dictionary<int, bool>();
-    private Dictionary<int, float> planetSpeeds = new Dictionary<int, float>(); // Stores calculated speed per planet
+    
+    private float elapsedTime = 0f; // Track the elapsed animation time
+    private bool isAnimating = false;
 
     void Start()
     {
@@ -43,7 +44,6 @@ public class SolarSystemLoader : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.P))
         {
             PrepareAnimationPaths();
-            CalculateSpeeds();
             StartAnimation();
         }
 
@@ -52,7 +52,10 @@ public class SolarSystemLoader : MonoBehaviour
             ResetPlanetsToStartingPosition();
         }
 
-        AnimatePlanets();
+        if (isAnimating)
+        {
+            AnimatePlanets();
+        }
     }
 
     void LoadAllPlanetData()
@@ -114,7 +117,6 @@ public class SolarSystemLoader : MonoBehaviour
     void PrepareAnimationPaths()
     {
         animationPaths.Clear();
-        planetFrames.Clear();
         planetAnimating.Clear();
 
         foreach (var obj in objectMapping)
@@ -124,82 +126,64 @@ public class SolarSystemLoader : MonoBehaviour
             {
                 List<Vector3> path = new List<Vector3>(positionData[obj.Key].Values);
                 animationPaths[index] = path;
-                planetFrames[index] = 0;
                 planetAnimating[index] = true;
             }
         }
     }
 
-    // Calculate speed for each planet based on the max animation time
-    void CalculateSpeeds()
-    {
-        foreach (var planet in animationPaths)
-        {
-            int planetIndex = planet.Key;
-            List<Vector3> path = planet.Value;
-
-            float pathLength = 0;
-            for (int i = 0; i < path.Count - 1; i++)
-            {
-                pathLength += Vector3.Distance(path[i], path[i + 1]);
-            }
-
-            // Calculate speed based on the total path length and max animation time
-            planetSpeeds[planetIndex] = pathLength / maxAnimationTime;
-        }
-    }
-
     void StartAnimation()
     {
-        List<int> planetKeys = new List<int>(planetAnimating.Keys);
-
-        foreach (int planet in planetKeys)
-        {
-            planetAnimating[planet] = true;
-        }
+        elapsedTime = 0f;
+        isAnimating = true;
     }
 
     void AnimatePlanets()
     {
+        elapsedTime += Time.deltaTime;
+        float t = Mathf.Clamp01(elapsedTime / maxAnimationTime); // Calculate interpolation factor based on max time
+
         foreach (var path in animationPaths)
         {
             int planetIndex = path.Key;
             List<Vector3> positions = path.Value;
-            int frame = planetFrames[planetIndex];
 
-            if (planetAnimating[planetIndex] && frame < positions.Count - 1)
+            if (positions.Count > 1 && planetAnimating[planetIndex])
             {
-                Vector3 startPosition = positions[frame];
-                Vector3 targetPosition = positions[frame + 1];
+                // Calculate the segment based on the interpolation factor
+                int totalSegments = positions.Count - 1;
+                float segmentProgress = t * totalSegments;
+                int currentSegment = Mathf.FloorToInt(segmentProgress);
+                float segmentT = segmentProgress - currentSegment; // Interpolation within the segment
 
-                // Use calculated speed for each planet based on maxAnimationTime
-                planets[planetIndex].transform.position = Vector3.MoveTowards(
-                    planets[planetIndex].transform.position,
-                    targetPosition,
-                    planetSpeeds[planetIndex] * Time.deltaTime
-                );
-
-                const float positionThreshold = 0.01f;
-
-                if (Vector3.Distance(planets[planetIndex].transform.position, targetPosition) < positionThreshold)
+                if (currentSegment < totalSegments)
                 {
-                    planetFrames[planetIndex]++;
-
-                    if (planetFrames[planetIndex] >= positions.Count - 1)
-                    {
-                        planetAnimating[planetIndex] = false;
-                    }
+                    Vector3 startPosition = positions[currentSegment];
+                    Vector3 targetPosition = positions[currentSegment + 1];
+                    planets[planetIndex].transform.position = Vector3.Lerp(startPosition, targetPosition, segmentT);
+                }
+                else
+                {
+                    planets[planetIndex].transform.position = positions[totalSegments]; // Ensure final position
+                    planetAnimating[planetIndex] = false;
                 }
             }
+        }
+
+        // Stop the animation when all planets have reached their final positions
+        if (t >= 1f)
+        {
+            isAnimating = false;
         }
     }
 
     void ResetPlanetsToStartingPosition()
     {
+        isAnimating = false;
+        elapsedTime = 0f;
+
         foreach (var obj in objectMapping)
         {
             int index = obj.Value;
-            planetFrames[index] = 0;
             planetAnimating[index] = false;
 
             if (positionData.ContainsKey(obj.Key))
