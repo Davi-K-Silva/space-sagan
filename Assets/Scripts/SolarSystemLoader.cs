@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
@@ -11,7 +12,8 @@ public class SolarSystemLoader : MonoBehaviour
     [SerializeField]
     private GameObject[] planets;  // Assign planet GameObjects in the Inspector
 
-    // Object ID to GameObject mapping
+    public float animationSpeed = 1.0f; // Speed multiplier for the animation
+
     private Dictionary<string, int> objectMapping = new Dictionary<string, int>
     {
         { "10", 0 },  // Sun
@@ -27,11 +29,30 @@ public class SolarSystemLoader : MonoBehaviour
 
     // Dictionary to store positions by date for each object
     private Dictionary<string, Dictionary<string, Vector3>> positionData = new Dictionary<string, Dictionary<string, Vector3>>();
+    private bool isAnimating = false;
 
     void Start()
     {
         LoadAllPlanetData();
         UpdatePlanetsToTargetDate();
+    }
+
+    void Update()
+    {
+        // Start or stop animation when the "P" key is pressed
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            isAnimating = !isAnimating;
+
+            if (isAnimating)
+            {
+                StartCoroutine(AnimatePlanets());
+            }
+            else
+            {
+                StopCoroutine(AnimatePlanets());
+            }
+        }
     }
 
     // Load data for each planet from its respective file in Resources
@@ -46,7 +67,6 @@ public class SolarSystemLoader : MonoBehaviour
     // Load data for a single planet based on its ID from Resources
     void LoadPlanetData(string objId)
     {
-        // Load the text file as a TextAsset from the Resources folder
         TextAsset textAsset = Resources.Load<TextAsset>($"PlanetData/planet_{objId}_positions");
         if (textAsset == null)
         {
@@ -56,14 +76,11 @@ public class SolarSystemLoader : MonoBehaviour
 
         Dictionary<string, Vector3> planetPositions = new Dictionary<string, Vector3>();
 
-        // Read lines from the TextAsset's text content
         string[] lines = textAsset.text.Split('\n');
         foreach (string line in lines)
         {
-            // Skip header or empty lines
             if (line.StartsWith("Date") || string.IsNullOrWhiteSpace(line)) continue;
 
-            // Parse the line to extract date and position
             string[] parts = line.Split(',');
             if (parts.Length < 4) continue;
 
@@ -75,7 +92,6 @@ public class SolarSystemLoader : MonoBehaviour
             planetPositions[date] = new Vector3(x, y, z);
         }
 
-        // Store the loaded data in the main dictionary
         positionData[objId] = planetPositions;
     }
 
@@ -95,6 +111,54 @@ public class SolarSystemLoader : MonoBehaviour
             {
                 Debug.LogWarning($"No position data found for object {objId} on {targetDate}");
             }
+        }
+    }
+
+    // Coroutine to animate planets along their paths
+    IEnumerator AnimatePlanets()
+    {
+        // Dictionary to keep track of each planet's position index
+        Dictionary<string, int> currentIndices = new Dictionary<string, int>();
+
+        // Initialize the indices for each planet to start at the first position
+        foreach (var objId in objectMapping.Keys)
+        {
+            currentIndices[objId] = 0;
+        }
+
+        while (isAnimating)
+        {
+            foreach (var obj in objectMapping)
+            {
+                string objId = obj.Key;
+                int index = obj.Value;
+
+                if (positionData.ContainsKey(objId))
+                {
+                    var positions = positionData[objId];
+                    var dates = new List<string>(positions.Keys);
+                    dates.Sort(); // Sort dates to follow the timeline
+
+                    if (currentIndices[objId] < dates.Count)
+                    {
+                        string date = dates[currentIndices[objId]];
+                        Vector3 targetPosition = positions[date];
+                        planets[index].transform.position = Vector3.Lerp(
+                            planets[index].transform.position,
+                            targetPosition,
+                            Time.deltaTime * animationSpeed
+                        );
+
+                        // Move to the next position if close enough
+                        if (Vector3.Distance(planets[index].transform.position, targetPosition) < 0.01f)
+                        {
+                            currentIndices[objId] = (currentIndices[objId] + 1) % dates.Count;
+                        }
+                    }
+                }
+            }
+
+            yield return null;
         }
     }
 }
