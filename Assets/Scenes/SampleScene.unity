@@ -361,6 +361,7 @@ MonoBehaviour:
   - {fileID: 1138270510}
   - {fileID: 2102573899}
   - {fileID: 672667784}
+  maxAnimationTime: 20
 --- !u!4 &155290891
 Transform:
   m_ObjectHideFlags: 0
