@@ -33,43 +33,39 @@ public class PlanetScaleToggle : MonoBehaviour
         }
 
         // Define hardcoded ludic scales for each planet
-        // Assign each planet's ludic scale individually
         for (int i = 0; i < planets.Length; i++)
         {
             GameObject planet = planets[i];
             Vector3 ludicScale;
 
-            switch (planet.name)
+            switch (planet.name.Replace("Model", ""))
             {
-                case "Sun":
-                    ludicScale = new Vector3(50, 50, 50); // Example ludic scale for the Sun
-                    break;
                 case "Mercury":
-                    ludicScale = new Vector3(1, 1, 1); // Example ludic scale for Mercury
+                    ludicScale = new Vector3(741.76f, 741.76f, 741.76f);
                     break;
                 case "Venus":
-                    ludicScale = new Vector3(2, 2, 2); // Example ludic scale for Venus
+                    ludicScale = new Vector3(1839.20f, 1839.20f, 1839.20f);
                     break;
                 case "Earth":
-                    ludicScale = new Vector3(2.5f, 2.5f, 2.5f); // Example ludic scale for Earth
+                    ludicScale = new Vector3(1936.48f, 1936.48f, 1936.48f);
                     break;
                 case "Mars":
-                    ludicScale = new Vector3(1.5f, 1.5f, 1.5f); // Example ludic scale for Mars
+                    ludicScale = new Vector3(1030.56f, 1030.56f, 1030.56f);
                     break;
                 case "Jupiter":
-                    ludicScale = new Vector3(10, 10, 10); // Example ludic scale for Jupiter
+                    ludicScale = new Vector3(21252.63f, 21252.63f, 21252.63f);
                     break;
                 case "Saturn":
-                    ludicScale = new Vector3(9, 9, 9); // Example ludic scale for Saturn
+                    ludicScale = new Vector3(17701.91f, 17701.91f, 17701.91f);
                     break;
                 case "Uranus":
-                    ludicScale = new Vector3(4, 4, 4); // Example ludic scale for Uranus
+                    ludicScale = new Vector3(7709.44f, 7709.44f, 7709.44f);
                     break;
                 case "Neptune":
-                    ludicScale = new Vector3(3.5f, 3.5f, 3.5f); // Example ludic scale for Neptune
+                    ludicScale = new Vector3(304.00f, 304.00f, 304.00f);
                     break;
                 default:
-                    ludicScale = realisticScales[planet]; // Fallback to realistic scale
+                    ludicScale = realisticScales[planet]; // Fallback to realistic scale if planet not listed
                     break;
             }
 
