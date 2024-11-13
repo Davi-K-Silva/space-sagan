@@ -1,23 +1,27 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;  // For TMP_InputField
 
 public class PlanetTeleporter : MonoBehaviour
 {
     [SerializeField]
-    private Transform[] planets;  // Assign planet transforms in the Inspector
+    private Transform[] planets;         // Assign planet transforms in the Inspector
 
-    public Transform playerCamera;  // Assign the camera (or any object to teleport)
-
-    public float teleportOffset = 10f;  // Offset distance from the planet
+    public Transform playerCamera;       // Assign the camera (or any object to teleport)
+    public float teleportOffset = 10f;   // Offset distance from the planet
+    public TMP_InputField dateInputField; // Reference to the TMP Input Field
 
     void Update()
     {
-        // Check for number key presses (1-9) and teleport to the corresponding planet
-        for (int i = 0; i < planets.Length; i++)
+        // Only check for number key presses if the input field is not focused
+        if (!dateInputField.isFocused)
         {
-            if (Input.GetKeyDown((KeyCode)(49 + i)))  // 49 is KeyCode for "1"
+            for (int i = 0; i < planets.Length; i++)
             {
-                TeleportToPlanet(i);
+                if (Input.GetKeyDown((KeyCode)(49 + i)))  // 49 is KeyCode for "1"
+                {
+                    TeleportToPlanet(i);
+                }
             }
         }
     }

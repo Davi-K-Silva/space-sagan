@@ -25,8 +25,7 @@ public class SolarSystemLoader : MonoBehaviour
         { "799", 7 }, // Uranus
         { "899", 8 }  // Neptune
     };
-
-    private Dictionary<string, Dictionary<string, Vector3>> positionData = new Dictionary<string, Dictionary<string, Vector3>>();
+    public Dictionary<string, Dictionary<string, Vector3>> positionData = new Dictionary<string, Dictionary<string, Vector3>>();
     private Dictionary<int, List<Vector3>> animationPaths = new Dictionary<int, List<Vector3>>();
     private Dictionary<int, bool> planetAnimating = new Dictionary<int, bool>();
     
@@ -96,7 +95,7 @@ public class SolarSystemLoader : MonoBehaviour
         positionData[objId] = planetPositions;
     }
 
-    void UpdatePlanetsToTargetDate()
+    public void UpdatePlanetsToTargetDate()
     {
         foreach (var obj in objectMapping)
         {
