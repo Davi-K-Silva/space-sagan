@@ -113,7 +113,7 @@ public class SolarSystemLoader : MonoBehaviour
         }
     }
 
-    void PrepareAnimationPaths()
+    public void PrepareAnimationPaths()
     {
         animationPaths.Clear();
         planetAnimating.Clear();
@@ -130,7 +130,7 @@ public class SolarSystemLoader : MonoBehaviour
         }
     }
 
-    void StartAnimation()
+    public void StartAnimation()
     {
         elapsedTime = 0f;
         isAnimating = true;
