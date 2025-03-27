@@ -9,19 +9,15 @@ public class PlanetTeleporter : MonoBehaviour
 
     public Transform playerCamera;       // Assign the camera (or any object to teleport)
     public float teleportOffset = 10f;   // Offset distance from the planet
-    public TMP_InputField dateInputField; // Reference to the TMP Input Field
+
 
     void Update()
     {
-        // Only check for number key presses if the input field is not focused
-        if (!dateInputField.isFocused)
+        for (int i = 0; i < planets.Length; i++)
         {
-            for (int i = 0; i < planets.Length; i++)
+            if (Input.GetKeyDown((KeyCode)(49 + i)))  // 49 is KeyCode for "1"
             {
-                if (Input.GetKeyDown((KeyCode)(49 + i)))  // 49 is KeyCode for "1"
-                {
-                    TeleportToPlanet(i);
-                }
+                TeleportToPlanet(i);
             }
         }
     }
