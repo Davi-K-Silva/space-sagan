@@ -53,8 +53,8 @@ public class OrbitDataLoader : MonoBehaviour
     lineRenderer.SetPositions(positions.ToArray());
 
     // Set line width to make it more visible
-    lineRenderer.startWidth = 2.0f; // Make it thicker (adjust as needed)
-    lineRenderer.endWidth = 2.0f;
+    lineRenderer.startWidth = 200.0f; // Make it thicker (adjust as needed)
+    lineRenderer.endWidth = 200.0f;
 
     // Set the color to white
     lineRenderer.material = new Material(Shader.Find("Sprites/Default")); // Assign a simple shader
