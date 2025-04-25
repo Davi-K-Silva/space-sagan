@@ -119,7 +119,8 @@ public class AnimationSettingsUI : MonoBehaviour
         float animationTime = float.Parse(animationTimeDropdown.options[animationTimeDropdown.value].text);
 
         // Pass values to SolarSystemLoader
-        solarSystemLoader.targetDate = startDate;
+        solarSystemLoader.startDate = startDate;
+        solarSystemLoader.endDate = endDate;
         solarSystemLoader.maxAnimationTime = animationTime;
         solarSystemLoader.PrepareAnimationPaths();  // Set up paths based on the start date
         solarSystemLoader.StartAnimation();         // Start animating

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
@@ -7,6 +8,8 @@ public class SolarSystemLoader : MonoBehaviour
 {
     [Tooltip("Date to load positions for, in YYYY-MM-DD format.")]
     public string targetDate; // Set this in the Inspector
+    public string startDate;  // Animation StartDate 
+    public string endDate;    // Animation EndDate
 
     [SerializeField]
     private GameObject[] planets;  // Assign planet GameObjects in the Inspector
@@ -113,19 +116,49 @@ public class SolarSystemLoader : MonoBehaviour
         }
     }
 
+    private string SimplifyHorizonsDate(string raw)
+    {
+        // raw = "A.D. 2023-Jan-01 00:00:00.0000 TDB"
+        string trimmed = raw.Replace("A.D. ", "").Replace(" TDB", "").Trim();
+        string[] parts = trimmed.Split(' ');
+        string[] dateParts = parts[0].Split('-');
+
+        string year = dateParts[0];
+        string month = DateTime.ParseExact(dateParts[1], "MMM", CultureInfo.InvariantCulture).Month.ToString("D2");
+        string day = dateParts[2];
+
+        return $"{year}-{month}-{day}"; // format: yyyy-MM-dd
+    }
+
     public void PrepareAnimationPaths()
     {
         animationPaths.Clear();
         planetAnimating.Clear();
 
+        //DateTime start = ParseHorizonsDate(startDate);
+        //DateTime end = ParseHorizonsDate(endDate);
+        
         foreach (var obj in objectMapping)
         {
             int index = obj.Value;
             if (positionData.ContainsKey(obj.Key))
             {
-                List<Vector3> path = new List<Vector3>(positionData[obj.Key].Values);
-                animationPaths[index] = path;
-                planetAnimating[index] = true;
+                var clippedPath = positionData[obj.Key]
+                .Where(kv =>
+                {
+                    string date = SimplifyHorizonsDate(kv.Key);
+                    return string.Compare(date, startDate) >= 0 && string.Compare(date, endDate) <= 0;
+                })
+                .OrderBy(kv => SimplifyHorizonsDate(kv.Key))
+                .Select(kv => kv.Value)
+                .ToList();
+
+                Debug.Log("Animation Days: " + clippedPath.Count);
+                if (clippedPath.Count > 0)
+                {
+                    animationPaths[index] = clippedPath;
+                    planetAnimating[index] = true;
+                }
             }
         }
     }
