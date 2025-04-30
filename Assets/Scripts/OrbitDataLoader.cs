@@ -7,6 +7,7 @@ public class OrbitDataLoader : MonoBehaviour
 {
     public string planetID;  // Set this in the Inspector, e.g., "199" for Mercury
     public List<Vector3> positions = new List<Vector3>();
+    public string dataDir = "default";
 
     void Start()
     {
@@ -17,7 +18,7 @@ public class OrbitDataLoader : MonoBehaviour
     void LoadOrbitData()
     {
         // Load the text file from Resources
-        TextAsset textAsset = Resources.Load<TextAsset>($"PlanetData/planet_{planetID}_positions");
+        TextAsset textAsset = Resources.Load<TextAsset>($"PlanetData/{dataDir}/planet_{planetID}_positions");
         if (textAsset == null)
         {
             Debug.LogError($"Data file not found for planet ID {planetID}");

@@ -7,9 +7,10 @@ using UnityEngine;
 public class SolarSystemLoader : MonoBehaviour
 {
     [Tooltip("Date to load positions for, in YYYY-MM-DD format.")]
-    public string targetDate; // Set this in the Inspector
-    public string startDate;  // Animation StartDate 
-    public string endDate;    // Animation EndDate
+    public string targetDate;             // Set this in the Inspector
+    public string startDate;              // Animation StartDate 
+    public string endDate;                // Animation EndDate
+    public string dataDir = "default";    // Planeta data dir 
 
     [SerializeField]
     private GameObject[] planets;  // Assign planet GameObjects in the Inspector
@@ -70,7 +71,7 @@ public class SolarSystemLoader : MonoBehaviour
 
     void LoadPlanetData(string objId)
     {
-        TextAsset textAsset = Resources.Load<TextAsset>($"PlanetData/planet_{objId}_positions");
+        TextAsset textAsset = Resources.Load<TextAsset>($"PlanetData/{dataDir}/planet_{objId}_positions");
         if (textAsset == null)
         {
             Debug.LogError($"Data file not found for object {objId}");

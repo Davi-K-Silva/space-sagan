@@ -39,7 +39,7 @@ public class SolarSystemUpdater : MonoBehaviour
         foreach (var obj in objectMapping)
         {
             string objId = obj.Key;
-            yield return StartCoroutine(FetchHorizonsData(objId, "2023-01-01", "2024-01-01"));
+            yield return StartCoroutine(FetchHorizonsData(objId, "1900-01-01", "2065-01-01"));
         }
     }
 
