@@ -787,6 +787,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planetID: 499
   positions: []
+  dataDir: neptune-lap
 --- !u!1 &75270491
 GameObject:
   m_ObjectHideFlags: 0
@@ -1780,6 +1781,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetDate: A.D. 2023-Jan-01 00:00:00.0000 TDB
+  startDate: 
+  endDate: 
+  dataDir: neptune-lap
   planets:
   - {fileID: 3189649513118228452}
   - {fileID: 156842604}
@@ -1854,6 +1858,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planetID: 199
   positions: []
+  dataDir: neptune-lap
 --- !u!1 &158984578
 GameObject:
   m_ObjectHideFlags: 0
@@ -5875,6 +5880,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planetID: 899
   positions: []
+  dataDir: neptune-lap
 --- !u!1 &675943203
 GameObject:
   m_ObjectHideFlags: 0
@@ -10142,6 +10148,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planetID: 699
   positions: []
+  dataDir: neptune-lap
 --- !u!1 &1139071306
 GameObject:
   m_ObjectHideFlags: 0
@@ -12043,7 +12050,6 @@ MonoBehaviour:
   - {fileID: 4584613311282958567}
   playerCamera: {fileID: 330585546}
   teleportOffset: 1
-  dateInputField: {fileID: 0}
 --- !u!4 &1301660467
 Transform:
   m_ObjectHideFlags: 0
@@ -15600,6 +15606,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planetID: 299
   positions: []
+  dataDir: neptune-lap
 --- !u!1 &1791065087
 GameObject:
   m_ObjectHideFlags: 0
@@ -16164,6 +16171,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planetID: 399
   positions: []
+  dataDir: neptune-lap
 --- !u!1 &1823602490
 GameObject:
   m_ObjectHideFlags: 0
@@ -16212,6 +16220,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planetID: 599
   positions: []
+  dataDir: neptune-lap
 --- !u!1 &1836179235
 GameObject:
   m_ObjectHideFlags: 0
@@ -18121,6 +18130,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   planetID: 799
   positions: []
+  dataDir: neptune-lap
 --- !u!1 &2109595153
 GameObject:
   m_ObjectHideFlags: 0
