@@ -29,6 +29,19 @@ public class SolarSystemLoader : MonoBehaviour
         { "799", 7 }, // Uranus
         { "899", 8 }  // Neptune
     };
+    private Dictionary<int, float> axialTiltDegrees = new Dictionary<int, float>
+    {
+        { 0, 0f },       // Sun (no tilt, or you can adjust for realism)
+        { 1, 0.034f },   // Mercury
+        { 2, 177.4f },   // Venus (retrograde)
+        { 3, 23.44f },   // Earth
+        { 4, 25.19f },   // Mars
+        { 5, 3.13f },    // Jupiter
+        { 6, 26.73f },   // Saturn
+        { 7, 97.77f },   // Uranus (extreme tilt)
+        { 8, 28.32f }    // Neptune
+    };
+    private Dictionary<int, Quaternion> precomputedRotations = new Dictionary<int, Quaternion>();
     public Dictionary<string, Dictionary<string, Vector3>> positionData = new Dictionary<string, Dictionary<string, Vector3>>();
     private Dictionary<int, List<Vector3>> animationPaths = new Dictionary<int, List<Vector3>>();
     private Dictionary<int, bool> planetAnimating = new Dictionary<int, bool>();
@@ -39,6 +52,7 @@ public class SolarSystemLoader : MonoBehaviour
     void Start()
     {
         LoadAllPlanetData();
+        PrecomputePlanetRotations();
         UpdatePlanetsToTargetDate();
     }
 
@@ -109,6 +123,12 @@ public class SolarSystemLoader : MonoBehaviour
             if (positionData.ContainsKey(objId) && positionData[objId].TryGetValue(targetDate, out Vector3 position))
             {
                 planets[index].transform.position = position;
+
+                // Apply axial tilt
+                if (precomputedRotations.TryGetValue(index, out Quaternion rotation))
+                {
+                    planets[index].transform.rotation = rotation;
+                }
             }
             else
             {
@@ -225,8 +245,60 @@ public class SolarSystemLoader : MonoBehaviour
                 if (path.Count > 0)
                 {
                     planets[index].transform.position = path[0];
+
+                    if (precomputedRotations.TryGetValue(index, out Quaternion rotation))
+                    {
+                        planets[index].transform.rotation = rotation;
+                    }
+
+               }
+            }
+        }
+    }
+
+    private Quaternion ComputeAxialRotation(int index, List<Vector3> positions, float axialTilt)
+    {
+        if (positions.Count < 2)
+            return Quaternion.identity;
+
+        Vector3 pos1 = positions[0];
+        Vector3 pos2 = positions[positions.Count - 1];
+
+        // Compute orbital plane normal
+        Vector3 orbitNormal = Vector3.Cross(pos1, pos2).normalized;
+
+        // Rotation from Unity up (Y axis) to orbit normal
+        Quaternion orbitalPlaneRotation = Quaternion.FromToRotation(Vector3.up, orbitNormal);
+
+        // Axial tilt relative to the orbital plane (assume local X as tilt axis)
+        Quaternion axialTiltRotation = Quaternion.AngleAxis(axialTilt, Vector3.right);
+
+        // Final combined rotation
+        return orbitalPlaneRotation * axialTiltRotation;
+    }
+
+    void PrecomputePlanetRotations()
+    {
+        foreach (var obj in objectMapping)
+        {
+            int index = obj.Value;
+            string objId = obj.Key;
+
+            if (positionData.ContainsKey(objId))
+            {
+                var positions = positionData[objId].Values.ToList();
+
+                if (positions.Count >= 2 && axialTiltDegrees.TryGetValue(index, out float tilt))
+                {
+                    Quaternion rotation = ComputeAxialRotation(index, positions, tilt);
+                    precomputedRotations[index] = rotation;
+                }
+                else
+                {
+                    precomputedRotations[index] = Quaternion.identity;
                 }
             }
         }
     }
+
 }
