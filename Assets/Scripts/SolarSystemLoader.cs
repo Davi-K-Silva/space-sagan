@@ -124,10 +124,15 @@ public class SolarSystemLoader : MonoBehaviour
             {
                 planets[index].transform.position = position;
 
-                // Apply axial tilt
-                if (precomputedRotations.TryGetValue(index, out Quaternion rotation))
+                if(index != 0)
                 {
-                    planets[index].transform.rotation = rotation;
+                    // Apply axial tilt
+                    Transform model = GetPlanetModelTransformByTag(planets[index]); 
+                    if (model != null && precomputedRotations.TryGetValue(index, out Quaternion rotation))
+                    {
+                        model.localRotation = rotation;
+                        //planets[index].transform.rotation = rotation;
+                    }
                 }
             }
             else
@@ -246,10 +251,21 @@ public class SolarSystemLoader : MonoBehaviour
                 {
                     planets[index].transform.position = path[0];
 
-                    if (precomputedRotations.TryGetValue(index, out Quaternion rotation))
+                    if(index != 0)
                     {
-                        planets[index].transform.rotation = rotation;
+                        // Apply axial tilt
+                        Transform model = GetPlanetModelTransformByTag(planets[index]); 
+                        if (model != null && precomputedRotations.TryGetValue(index, out Quaternion rotation))
+                        {
+                            model.localRotation = rotation;
+                            //planets[index].transform.rotation = rotation;
+                        }
                     }
+
+                    //if (precomputedRotations.TryGetValue(index, out Quaternion rotation))
+                    //{
+                    //    planets[index].transform.rotation = rotation;
+                    //}
 
                }
             }
@@ -300,5 +316,20 @@ public class SolarSystemLoader : MonoBehaviour
             }
         }
     }
+
+    Transform GetPlanetModelTransformByTag(GameObject planetRoot, string tag = "PlanetModel")
+    {
+        foreach (Transform child in planetRoot.transform)
+        {
+            if (child.gameObject.CompareTag(tag))
+            {
+                return child;
+            }
+        }
+
+        Debug.LogWarning($"No child with tag '{tag}' found under {planetRoot.name}");
+        return null;
+    }
+
 
 }
