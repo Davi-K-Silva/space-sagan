@@ -278,10 +278,16 @@ public class SolarSystemLoader : MonoBehaviour
             return Quaternion.identity;
 
         Vector3 pos1 = positions[0];
-        Vector3 pos2 = positions[positions.Count - 1];
+        Vector3 pos2 = positions[1];
 
         // Compute orbital plane normal
         Vector3 orbitNormal = Vector3.Cross(pos1, pos2).normalized;
+
+        // Ensure consistent "upward" direction (dot with Unity's global up)
+        if (Vector3.Dot(orbitNormal, Vector3.up) < 0)
+        {
+            orbitNormal = -orbitNormal; // Flip to align with Y+
+        }
 
         // Rotation from Unity up (Y axis) to orbit normal
         Quaternion orbitalPlaneRotation = Quaternion.FromToRotation(Vector3.up, orbitNormal);
