@@ -41,6 +41,19 @@ public class SolarSystemLoader : MonoBehaviour
         { 7, 97.77f },   // Uranus (extreme tilt)
         { 8, 28.32f }    // Neptune
     };
+    private Dictionary<int, float> rotationSpeeds = new Dictionary<int, float>
+    {
+        { 0, 0f },         // Sun (optional)
+        { 1, 6.14f },      // Mercury: ~58.6 Earth days
+        { 2, -1.48f },     // Venus: retrograde (~-243 Earth days)
+        { 3, 360f },       // Earth: 1 rotation/day
+        { 4, 350.89f },    // Mars
+        { 5, 870.53f },    // Jupiter
+        { 6, 810f },       // Saturn
+        { 7, -501f },      // Uranus (retrograde-ish)
+        { 8, 536f }        // Neptune
+    };
+
     private Dictionary<int, Quaternion> precomputedRotations = new Dictionary<int, Quaternion>();
     public Dictionary<string, Dictionary<string, Vector3>> positionData = new Dictionary<string, Dictionary<string, Vector3>>();
     private Dictionary<int, List<Vector3>> animationPaths = new Dictionary<int, List<Vector3>>();
@@ -218,6 +231,19 @@ public class SolarSystemLoader : MonoBehaviour
                     Vector3 startPosition = positions[currentSegment];
                     Vector3 targetPosition = positions[currentSegment + 1];
                     planets[planetIndex].transform.position = Vector3.Lerp(startPosition, targetPosition, segmentT);
+
+                    // Rotate around own axis during orbit
+                    Transform model = GetPlanetModelTransformByTag(planets[planetIndex]);
+
+                    if (model != null && rotationSpeeds.TryGetValue(planetIndex, out float spinSpeed))
+                    {
+                        // Spin based on animation time and speed (scaled to maxAnimationTime)
+                        float fullRotationPerDay = spinSpeed;
+                        float totalAnimationDays = animationPaths[planetIndex].Count;
+                        float degreesPerSecond = (fullRotationPerDay * totalAnimationDays) / maxAnimationTime;
+
+                        model.Rotate(Vector3.up, -degreesPerSecond * Time.deltaTime, Space.Self);
+                    }
                 }
                 else
                 {
