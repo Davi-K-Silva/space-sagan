@@ -232,17 +232,20 @@ public class SolarSystemLoader : MonoBehaviour
                     Vector3 targetPosition = positions[currentSegment + 1];
                     planets[planetIndex].transform.position = Vector3.Lerp(startPosition, targetPosition, segmentT);
 
-                    // Rotate around own axis during orbit
-                    Transform model = GetPlanetModelTransformByTag(planets[planetIndex]);
-
-                    if (model != null && rotationSpeeds.TryGetValue(planetIndex, out float spinSpeed))
+                    if (planetIndex != 0)
                     {
-                        // Spin based on animation time and speed (scaled to maxAnimationTime)
-                        float fullRotationPerDay = spinSpeed;
-                        float totalAnimationDays = animationPaths[planetIndex].Count;
-                        float degreesPerSecond = (fullRotationPerDay * totalAnimationDays) / maxAnimationTime;
+                        // Rotate around own axis during orbit
+                        Transform model = GetPlanetModelTransformByTag(planets[planetIndex]);
 
-                        model.Rotate(Vector3.up, -degreesPerSecond * Time.deltaTime, Space.Self);
+                        if (model != null && rotationSpeeds.TryGetValue(planetIndex, out float spinSpeed))
+                        {
+                            // Spin based on animation time and speed (scaled to maxAnimationTime)
+                            float fullRotationPerDay = spinSpeed;
+                            float totalAnimationDays = animationPaths[planetIndex].Count;
+                            float degreesPerSecond = (fullRotationPerDay * totalAnimationDays) / maxAnimationTime;
+
+                            model.Rotate(Vector3.up, -degreesPerSecond * Time.deltaTime, Space.Self);
+                        }
                     }
                 }
                 else
