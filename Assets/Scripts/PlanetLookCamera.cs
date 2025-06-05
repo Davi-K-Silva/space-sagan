@@ -51,8 +51,15 @@ public class PlanetLookCamera : MonoBehaviour
                           + Vector3.up * height
                           + right * side;
 
-        transform.position = cameraPos;
-        transform.LookAt(targetToLookAt.position);
+        //transform.position = cameraPos;
+        //transform.LookAt(targetToLookAt.position);
+
+        // Smooth position and rotation
+        float smoothSpeed = 5f;
+        transform.position = Vector3.Lerp(transform.position, cameraPos, Time.deltaTime * smoothSpeed);
+
+        Quaternion desiredRotation = Quaternion.LookRotation(targetToLookAt.position - transform.position);
+        transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, Time.deltaTime * smoothSpeed);
     }
 }
 
