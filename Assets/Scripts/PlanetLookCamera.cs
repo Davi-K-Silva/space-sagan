@@ -6,28 +6,46 @@ public class PlanetLookCamera : MonoBehaviour
     public Transform targetToLookAt;
 
     [Header("Base Offsets (will be scaled)")]
-    public float baseDistance = 5.0f;
-    public float baseHeight = 2.0f;
-    public float baseSide = 0.0f;
+    public float baseDistance = 1.0f;
+    public float baseHeight = 0.5f;
+    public float baseSide = 0.5f;
+
+    private float currentDistance;
+    private float currentHeight;
+    private float currentSide;
+
+    void Start()
+    {
+        SetOffsets(baseDistance, baseHeight, baseSide); // Init with base
+    }
+
+    public void SetOffsets(float distance, float height, float side)
+    {
+        currentDistance = distance;
+        currentHeight = height;
+        currentSide = side;
+    }
+
+    public void SetTargets(Transform planet, Transform lookAt)
+    {
+        planetToFollow = planet;
+        targetToLookAt = lookAt;
+    }
 
     void LateUpdate()
     {
         if (planetToFollow == null || targetToLookAt == null)
             return;
 
-        // Compute scale based on the planet's size
-        float scaleFactor = planetToFollow.localScale.magnitude;  // or use .x if uniform scaling
+        float scaleFactor = planetToFollow.localScale.magnitude;
 
-        // Calculate direction to target
         Vector3 lookDirection = (targetToLookAt.position - planetToFollow.position).normalized;
         Vector3 right = Vector3.Cross(Vector3.up, lookDirection).normalized;
 
-        // Scaled offsets
-        float distance = baseDistance * scaleFactor;
-        float height = baseHeight * scaleFactor;
-        float side = baseSide * scaleFactor;
+        float distance = currentDistance * scaleFactor;
+        float height = currentHeight * scaleFactor;
+        float side = currentSide * scaleFactor;
 
-        // Final camera position
         Vector3 cameraPos = planetToFollow.position
                           - lookDirection * distance
                           + Vector3.up * height
@@ -37,5 +55,6 @@ public class PlanetLookCamera : MonoBehaviour
         transform.LookAt(targetToLookAt.position);
     }
 }
+
 
 
